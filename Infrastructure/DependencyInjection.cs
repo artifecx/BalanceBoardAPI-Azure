@@ -2,6 +2,8 @@
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Application.Common.Interfaces;
+using Application.Interfaces;
+using Infrastructure.Authentication;
 
 namespace Infrastructure
 {
@@ -14,6 +16,8 @@ namespace Infrastructure
                 options.UseSqlServer(connectionString));
 
             services.AddScoped<IApplicationDbContext>(provider => provider.GetRequiredService<ApplicationDbContext>());
+
+            services.AddScoped<ITokenProvider, TokenProvider>();
 
             return services;
         }

@@ -4,10 +4,8 @@
     {
         public static IServiceCollection AddPresentation(this IServiceCollection services)
         {
-            services.AddEndpointsApiExplorer();
-            services.AddSwaggerGen();
-
             services.AddControllers();
+            services.AddOpenApi();
 
             return services;
         }

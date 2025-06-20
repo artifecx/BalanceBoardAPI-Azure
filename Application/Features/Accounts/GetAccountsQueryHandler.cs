@@ -31,7 +31,7 @@ namespace Application.Features.Accounts
                         (
                             t.Id,
                             t.AccountId,
-                            t.CategoryId,
+                            t.CategoryId ?? Guid.Empty,
                             t.Amount,
                             t.Note,
                             t.TransactionDate,

@@ -13,8 +13,7 @@ namespace Domain.Entities
         [Required]
         public Guid AccountId { get; set; }
 
-        [Required]
-        public Guid CategoryId { get; set; }
+        public Guid? CategoryId { get; set; }
 
         [Required]
         [Precision(18, 2)]
@@ -37,7 +36,7 @@ namespace Domain.Entities
         [ForeignKey(nameof(CategoryId))]
         [InverseProperty(nameof(Category.Transactions))]
         [DeleteBehavior(DeleteBehavior.NoAction)]
-        public Category Category { get; set; } = null!;
+        public Category? Category { get; set; } = null!;
 
         [ForeignKey(nameof(UserId))]
         [InverseProperty(nameof(User.Transactions))]

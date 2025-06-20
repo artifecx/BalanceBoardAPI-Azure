@@ -1,6 +1,7 @@
 ﻿using Application.Common;
 using Application.Common.Interfaces;
 using Application.Common.Mediator;
+using Application.Dtos.Auth;
 using Application.Interfaces;
 using Domain.Entities;
 using Microsoft.AspNetCore.Identity;
@@ -8,9 +9,9 @@ using Microsoft.EntityFrameworkCore;
 
 namespace Application.Features.Auth
 {
-    public class LoginUserCommandHandler(IApplicationDbContext context, ITokenProvider tokenProvider) : IRequestHandler<LoginUserCommand, Result<string>>
+    public class LoginUserCommandHandler(IApplicationDbContext context, ITokenProvider tokenProvider) : IRequestHandler<LoginUserCommand, Result<TokenResponseDto>>
     {
-        public async Task<Result<string>> Handle(LoginUserCommand request, CancellationToken cancellationToken)
+        public async Task<Result<TokenResponseDto>> Handle(LoginUserCommand request, CancellationToken cancellationToken)
         {
             var loginUser = request.Request;
 
@@ -19,15 +20,18 @@ namespace Application.Features.Auth
 
             if (user is null)
             {
-                return Result<string>.Failure("Invalid login credentials.");
+                return Result<TokenResponseDto>.Failure("Invalid login credentials.");
             }
 
             if (!IsPasswordCorrect(user, loginUser.Password))
             {
-                return Result<string>.Failure("Invalid login credentials.");
+                return Result<TokenResponseDto>.Failure("Invalid login credentials.");
             }
 
-            return Result<string>.Success(tokenProvider.Create(user));
+            var tokenResponse = tokenProvider.CreateTokenResponse(user);
+            await context.SaveChangesAsync(cancellationToken);
+
+            return Result<TokenResponseDto>.Success(tokenResponse);
         }
 
         private static bool IsPasswordCorrect(User user, string password)

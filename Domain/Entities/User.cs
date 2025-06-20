@@ -23,6 +23,10 @@ namespace Domain.Entities
         [Required]
         public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
 
+        public string? RefreshToken { get; set; } = string.Empty;
+
+        public DateTime? RefreshTokenExpiry { get; set; }
+
 
         [InverseProperty(nameof(Account.User))]
         [DeleteBehavior(DeleteBehavior.NoAction)]

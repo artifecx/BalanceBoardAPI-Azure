@@ -1,5 +1,6 @@
 ﻿using Application.Common.Mediator;
 using Application.Dtos;
+using Application.Dtos.Auth;
 using Application.Features.Auth;
 using Microsoft.AspNetCore.Mvc;
 
@@ -28,6 +29,18 @@ namespace Web.Api.Controllers
             if (!result.IsSuccess && result.Data is null)
             {
                 return BadRequest(new { message = result.Error });
+            }
+
+            return Ok(result.Data);
+        }
+
+        [HttpPost("refresh-token")]
+        public async Task<IActionResult> RefreshToken(RefreshTokenRequestDto request)
+        {
+            var result = await Mediator.Send(new RefreshTokenCommand(request));
+            if (!result.IsSuccess && result.Data is null)
+            {
+                return Unauthorized(new { message = result.Error });
             }
 
             return Ok(result.Data);

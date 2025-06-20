@@ -1,8 +1,9 @@
-﻿using Domain.Entities;
+﻿using Application.Dtos.Auth;
+using Domain.Entities;
 
 namespace Application.Interfaces;
 
 public interface ITokenProvider
 {
-    string Create(User user);
+    TokenResponseDto CreateTokenResponse(User user);
 }

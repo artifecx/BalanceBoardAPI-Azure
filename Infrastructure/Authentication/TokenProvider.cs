@@ -1,16 +1,27 @@
-﻿using Application.Interfaces;
+﻿using Application.Dtos.Auth;
+using Application.Interfaces;
 using Domain.Entities;
 using Microsoft.Extensions.Configuration;
 using Microsoft.IdentityModel.Tokens;
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
+using System.Security.Cryptography;
 using System.Text;
 
 namespace Infrastructure.Authentication
 {
     public sealed class TokenProvider(IConfiguration configuration) : ITokenProvider
     {
-        public string Create(User user)
+        public TokenResponseDto CreateTokenResponse(User user)
+        {
+            return new TokenResponseDto
+            (
+                Create(user),
+                GenerateRefreshToken(user)
+            );
+        }
+
+        private string Create(User user)
         {
             var claims = new List<Claim>
             {
@@ -28,11 +39,29 @@ namespace Infrastructure.Authentication
                 issuer: configuration["Jwt:Issuer"],
                 audience: configuration["Jwt:Audience"],
                 claims: claims,
-                expires: DateTime.UtcNow.AddHours(1),
+                expires: DateTime.UtcNow.AddMinutes(10),
                 signingCredentials: creds
             );
 
             return new JwtSecurityTokenHandler().WriteToken(tokenDescriptor);
+        }
+
+        private static string GenerateRefreshToken(User user)
+        {
+            var refreshToken = GenerateRefreshTokenString();
+            user.RefreshToken = refreshToken;
+            user.RefreshTokenExpiry = DateTime.UtcNow.AddDays(7);
+            return refreshToken;
+        }
+
+        private static string GenerateRefreshTokenString()
+        {
+            var randomNumber = new byte[32];
+            using (var rng = RandomNumberGenerator.Create())
+            {
+                rng.GetBytes(randomNumber);
+            }
+            return Convert.ToBase64String(randomNumber);
         }
     }
 }

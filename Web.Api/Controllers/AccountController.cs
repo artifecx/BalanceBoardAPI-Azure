@@ -1,54 +1,63 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Application.Common.Mediator;
+using Application.Dtos.Accounts;
+using Application.Features.Accounts;
+using Infrastructure.Authentication;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
+using Web.Api.Extensions;
 
 namespace Web.Api.Controllers
 {
     [Route("api/v1/accounts")]
     [ApiController]
-    public class AccountController : ControllerBase
+    [Authorize]
+    public class AccountController(ISender Mediator) : ControllerBase
     {
         // GET: api/accounts
         [HttpGet]
         public async Task<IActionResult> GetAll()
         {
-            return Ok();
+            var result = await Mediator.Send(new GetAccountsQuery(User.GetUserId()));
+            return this.HandleResult(result);
         }
 
         // GET api/accounts/5
         [HttpGet("{id}")]
         public async Task<IActionResult> GetById(Guid id)
         {
-            return Ok();
+            var result = await Mediator.Send(new GetAccountByIdQuery(id, User.GetUserId()));
+            return this.HandleResult(result);
         }
 
         // POST api/accounts
         [HttpPost]
-        public async Task<IActionResult> Create([FromBody] string value)
+        public async Task<IActionResult> Create(UpsertAccountDto request)
         {
-            if (string.IsNullOrEmpty(value))
-            {
-                return BadRequest("Value cannot be null or empty.");
-            }
-
-            return CreatedAtAction(nameof(GetById), new { id = Guid.NewGuid() }, value);
+            SetUserIdInRequest(request);
+            var result = await Mediator.Send(new CreateAccountCommand(request));
+            return this.HandleResult(result);
         }
 
         // PUT api/accounts/5
         [HttpPut("{id}")]
-        public async Task<IActionResult> Update(Guid id, [FromBody] string value)
+        public async Task<IActionResult> Update(Guid id, UpsertAccountDto request)
         {
-            if (string.IsNullOrEmpty(value))
-            {
-                return BadRequest("Value cannot be null or empty.");
-            }
-
-            return Ok();
+            SetUserIdInRequest(request);
+            var result = await Mediator.Send(new UpdateAccountCommand(id, request));
+            return this.HandleResult(result);
         }
 
         // DELETE api/accounts/5
         [HttpDelete("{id}")]
         public async Task<IActionResult> Delete(Guid id)
         {
-            return NoContent();
+            var result = await Mediator.Send(new DeleteAccountCommand(id, User.GetUserId()));
+            return this.HandleDeleteResult(result);
+        }
+
+        private void SetUserIdInRequest(UpsertAccountDto request)
+        {
+            request.UserId = User.GetUserId();
         }
     }
 }

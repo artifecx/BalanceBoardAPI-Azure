@@ -3,6 +3,7 @@ using Application.Dtos;
 using Application.Dtos.Auth;
 using Application.Features.Auth;
 using Microsoft.AspNetCore.Mvc;
+using Web.Api.Extensions;
 
 namespace Web.Api.Controllers
 {
@@ -14,36 +15,21 @@ namespace Web.Api.Controllers
         public async Task<IActionResult> Register(RegisterUserDto request)
         {
             var result = await Mediator.Send(new RegisterUserCommand(request));
-            if (!result.IsSuccess && result.Data is null)
-            {
-                return BadRequest(new { message = result.Error });
-            }
-
-            return Ok(result.Data);
+            return this.HandleResult(result);
         }
 
         [HttpPost("login")]
         public async Task<IActionResult> Login(LoginUserDto request)
         {
             var result = await Mediator.Send(new LoginUserCommand(request));
-            if (!result.IsSuccess && result.Data is null)
-            {
-                return BadRequest(new { message = result.Error });
-            }
-
-            return Ok(result.Data);
+            return this.HandleResult(result);
         }
 
         [HttpPost("refresh-token")]
         public async Task<IActionResult> RefreshToken(RefreshTokenRequestDto request)
         {
             var result = await Mediator.Send(new RefreshTokenCommand(request));
-            if (!result.IsSuccess && result.Data is null)
-            {
-                return Unauthorized(new { message = result.Error });
-            }
-
-            return Ok(result.Data);
+            return this.HandleResultWithAuthFallback(result);
         }
     }
 }

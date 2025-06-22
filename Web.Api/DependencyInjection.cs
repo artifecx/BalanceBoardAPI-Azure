@@ -1,6 +1,8 @@
 ﻿using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.Mvc.ApplicationModels;
 using Microsoft.IdentityModel.Tokens;
 using System.Text;
+using Web.Api.Extensions;
 
 namespace Web.Api
 {
@@ -9,6 +11,10 @@ namespace Web.Api
         public static IServiceCollection AddPresentation(this IServiceCollection services, IConfiguration configuration)
         {
             services.AddControllers();
+            services.AddControllers(options =>
+            {
+                options.Conventions.Add(new RouteTokenTransformerConvention(new SlugifyParameterTransformer()));
+            });
             services.AddOpenApi();
 
             services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)

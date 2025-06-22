@@ -2,9 +2,9 @@
 
 namespace Web.Api.Controllers
 {
-    [Route("api/v1/transactions")]
+    [Route("api/v1/[controller]")]
     [ApiController]
-    public class TransactionController : ControllerBase
+    public class TransactionsController : ControllerBase
     {
         // GET: api/transactions
         [HttpGet]

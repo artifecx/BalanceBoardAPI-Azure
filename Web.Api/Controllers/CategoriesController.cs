@@ -2,9 +2,9 @@
 
 namespace Web.Api.Controllers
 {
-    [Route("api/v1/categories")]
+    [Route("api/v1/[controller]")]
     [ApiController]
-    public class CategoryController : ControllerBase
+    public class CategoriesController : ControllerBase
     {
         // GET: api/categories
         [HttpGet]

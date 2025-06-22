@@ -8,10 +8,10 @@ using Web.Api.Extensions;
 
 namespace Web.Api.Controllers
 {
-    [Route("api/v1/accounts")]
+    [Route("api/v1/[controller]")]
     [ApiController]
     [Authorize]
-    public class AccountController(ISender Mediator) : ControllerBase
+    public class AccountsController(ISender Mediator) : ControllerBase
     {
         // GET: api/accounts
         [HttpGet]

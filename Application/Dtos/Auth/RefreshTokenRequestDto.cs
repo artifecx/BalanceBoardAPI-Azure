@@ -1,13 +1,7 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿namespace Application.Dtos.Auth;
 
-namespace Application.Dtos.Auth
+public class RefreshTokenRequestDto
 {
-    public class RefreshTokenRequestDto
-    {
-        [Required]
-        public Guid UserId { get; set; }
-
-        [Required]
-        public string RefreshToken { get; set; } = null!;
-    }
+    public Guid UserId { get; set; }
+    public string RefreshToken { get; set; } = null!;
 }

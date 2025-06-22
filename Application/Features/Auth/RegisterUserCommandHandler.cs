@@ -1,7 +1,7 @@
 ﻿using Application.Common;
 using Application.Common.Interfaces;
 using Application.Common.Mediator;
-using Application.Dtos;
+using Application.Dtos.Auth;
 using Domain.Entities;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;

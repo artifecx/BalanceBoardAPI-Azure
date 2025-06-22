@@ -1,6 +1,4 @@
-﻿using System.ComponentModel.DataAnnotations;
-
-namespace Application.Dtos;
+﻿namespace Application.Dtos.Auth;
 
 public sealed record UserDto
 (

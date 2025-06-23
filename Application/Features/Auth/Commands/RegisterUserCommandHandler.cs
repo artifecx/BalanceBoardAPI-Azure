@@ -15,9 +15,7 @@ namespace Application.Features.Auth
             var newUser = request.Request;
 
             if (await context.Users.AnyAsync(u => u.Email.ToLower() == newUser.Email.ToLower(), cancellationToken))
-            {
                 return Result<UserDto>.Failure("Email is already in use.");
-            }
 
             var user = new User();
             user.Email = newUser.Email.ToLower();

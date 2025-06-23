@@ -13,10 +13,10 @@ namespace Application.Features.Accounts
         {
             var accountDto = request.Request;
 
-            if (!accountDto.UserId.HasValue)
+            if (accountDto.UserId == Guid.Empty)
                 return Result<AccountDto>.Failure("Unauthorized access.");
 
-            var userId = accountDto.UserId!.Value;
+            var userId = accountDto.UserId;
             var userExists = await context.Users
                 .AnyAsync(u => u.Id == userId, cancellationToken);
             if (!userExists)

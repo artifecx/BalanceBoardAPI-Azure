@@ -12,9 +12,7 @@ namespace Application.Features.Accounts
         public async Task<Result<List<AccountDto>>> Handle(GetAccountsQuery request, CancellationToken cancellationToken)
         {
             if(request.UserId == Guid.Empty)
-            {
                 return Result<List<AccountDto>>.Failure("Unable to process request, User ID is not provided.");
-            }
 
             var accounts = await context.Accounts
                 .Where(a => a.UserId == request.UserId)
@@ -43,9 +41,7 @@ namespace Application.Features.Accounts
                 .ToListAsync(cancellationToken);
 
             if (accounts is null || accounts.Count == 0)
-            {
                 return Result<List<AccountDto>>.Failure("No accounts found for the specified user.");
-            }
 
             return Result<List<AccountDto>>.Success(accounts);
         }

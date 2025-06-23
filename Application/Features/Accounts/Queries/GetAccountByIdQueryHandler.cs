@@ -12,9 +12,7 @@ namespace Application.Features.Accounts
         public async Task<Result<AccountDto>> Handle(GetAccountByIdQuery request, CancellationToken cancellationToken)
         {
             if (request.Id == Guid.Empty)
-            {
                 return Result<AccountDto>.Failure("Unable to process request, Account ID is not provided.");
-            }
 
             var accountEntity = await context.Accounts
                 .Include(a => a.Transactions)

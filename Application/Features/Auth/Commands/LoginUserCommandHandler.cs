@@ -19,10 +19,10 @@ namespace Application.Features.Auth
                 .FirstOrDefaultAsync(u => u.Email.ToLower() == loginUser.Email.ToLower(), cancellationToken);
 
             if (user is null)
-                return Result<TokenResponseDto>.Failure("Invalid login credentials.");
+                return Result<TokenResponseDto>.Failure("Invalid login credentials.", 401);
 
             if (!IsPasswordCorrect(user, loginUser.Password))
-                return Result<TokenResponseDto>.Failure("Invalid login credentials.");
+                return Result<TokenResponseDto>.Failure("Invalid login credentials.", 401);
 
             var tokenResponse = tokenProvider.CreateTokenResponse(user);
             await context.SaveChangesAsync(cancellationToken);

@@ -11,20 +11,13 @@ namespace Web.Api.Extensions
             if (result.IsSuccess)
                 return controller.Ok(result.Data);
 
-            if (result.Data is null)
-                return controller.NotFound(result.Error);
-
-            return controller.BadRequest(result.Error);
-        }
-
-        public static IActionResult HandleResultWithAuthFallback<T>(this ControllerBase controller, Result<T> result)
-        {
-            if (result.IsSuccess)
-                return controller.Ok(result.Data);
-
-            return result.Data is null
-                ? controller.Unauthorized(result.Error)
-                : controller.BadRequest(result.Error);
+            return result.StatusCode switch
+            {
+                401 => controller.Unauthorized(result.Error),
+                404 => controller.NotFound(result.Error),
+                409 => controller.Conflict(result.Error),
+                _ => controller.BadRequest(result.Error)
+            };
         }
 
         public static IActionResult HandleDeleteResult<T>(this ControllerBase controller, Result<T> result)
@@ -32,7 +25,12 @@ namespace Web.Api.Extensions
             if (result.IsSuccess)
                 return controller.NoContent();
 
-            return controller.BadRequest(result.Error);
+            return result.StatusCode switch
+            {
+                401 => controller.Unauthorized(result.Error),
+                404 => controller.NotFound(result.Error),
+                _ => controller.BadRequest(result.Error)
+            };
         }
 
         public static async Task<IActionResult?> ValidateRequest<T>(

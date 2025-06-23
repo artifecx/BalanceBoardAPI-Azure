@@ -12,7 +12,7 @@ namespace Application.Features.Accounts
         public async Task<Result<AccountDto>> Handle(GetAccountByIdQuery request, CancellationToken cancellationToken)
         {
             if (request.Id == Guid.Empty)
-                return Result<AccountDto>.Failure("Unable to process request, Account ID is not provided.");
+                return Result<AccountDto>.Failure("Unable to process request, Account ID is not provided.", 400);
 
             var accountEntity = await context.Accounts
                 .Include(a => a.Transactions)
@@ -20,10 +20,10 @@ namespace Application.Features.Accounts
                 .FirstOrDefaultAsync(a => a.Id == request.Id, cancellationToken);
 
             if (accountEntity is null)
-                return Result<AccountDto>.Failure("Account not found.");
+                return Result<AccountDto>.Failure("Account not found.", 404);
 
             if (accountEntity.UserId != request.UserId)
-                return Result<AccountDto>.Failure("Unauthorized access to account.");
+                return Result<AccountDto>.Failure("Unauthorized access to account.", 401);
 
             var transactionDtos = accountEntity.Transactions?.Select(t => new TransactionDto
             (

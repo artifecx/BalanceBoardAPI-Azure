@@ -13,21 +13,21 @@ namespace Application.Features.Accounts
         {
             var accountId = request.Id;
             if (accountId == Guid.Empty)
-                return Result<AccountDto>.Failure("Account ID cannot be empty.");
+                return Result<AccountDto>.Failure("Account ID cannot be empty.", 400);
 
             var account = await context.Accounts
                 .Include(a => a.Transactions)
                 .FirstOrDefaultAsync(a => a.Id == accountId, cancellationToken);
             if (account is null)
-                return Result<AccountDto>.Failure("Account not found.");
+                return Result<AccountDto>.Failure("Account not found.", 404);
 
             var accountDto = request.Request;
             if (accountDto.UserId != account.UserId)
-                return Result<AccountDto>.Failure("User ID mismatch. Unauthorized access.");
+                return Result<AccountDto>.Failure("User ID mismatch. Unauthorized access.", 401);
 
             if (string.IsNullOrWhiteSpace(accountDto.Name) 
                 || string.IsNullOrWhiteSpace(accountDto.Currency))
-                return Result<AccountDto>.Failure("Invalid account data provided for update.");
+                return Result<AccountDto>.Failure("Invalid account data provided for update.", 400);
 
             account.Name = accountDto.Name;
             account.Balance = accountDto.Balance;

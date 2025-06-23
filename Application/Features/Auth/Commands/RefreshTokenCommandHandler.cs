@@ -15,7 +15,7 @@ namespace Application.Features.Auth
             
             var user = await ValidateRefreshTokenAsync(refreshTokenRequest.UserId, refreshTokenRequest.RefreshToken);
             if(user is null)
-                return Result<TokenResponseDto>.Failure("Invalid refresh token.");
+                return Result<TokenResponseDto>.Failure("Invalid refresh token.", 401);
 
             var tokenResponse = tokenProvider.CreateTokenResponse(user);
             await context.SaveChangesAsync(cancellationToken);

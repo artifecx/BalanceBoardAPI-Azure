@@ -37,7 +37,7 @@ namespace Web.Api.Controllers
         public async Task<IActionResult> RefreshToken(RefreshTokenRequestDto request)
         {
             var result = await Mediator.Send(new RefreshTokenCommand(request));
-            return this.HandleResultWithAuthFallback(result);
+            return this.HandleResult(result);
         }
     }
 }

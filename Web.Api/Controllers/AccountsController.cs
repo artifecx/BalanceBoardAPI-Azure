@@ -14,7 +14,6 @@ namespace Web.Api.Controllers
     [Authorize]
     public class AccountsController(ISender mediator) : ControllerBase
     {
-        // GET: api/accounts
         [HttpGet]
         public async Task<IActionResult> GetAll()
         {
@@ -22,7 +21,6 @@ namespace Web.Api.Controllers
             return this.HandleResult(result);
         }
 
-        // GET api/accounts/5
         [HttpGet("{id}")]
         public async Task<IActionResult> GetById(Guid id)
         {
@@ -30,7 +28,6 @@ namespace Web.Api.Controllers
             return this.HandleResult(result);
         }
 
-        // POST api/accounts
         [HttpPost]
         public async Task<IActionResult> Create(UpsertAccountDto request, IValidator<UpsertAccountDto> validator)
         {
@@ -43,7 +40,6 @@ namespace Web.Api.Controllers
             return this.HandleResult(result);
         }
 
-        // PUT api/accounts/5
         [HttpPut("{id}")]
         public async Task<IActionResult> Update(Guid id, UpsertAccountDto request, IValidator<UpsertAccountDto> validator)
         {
@@ -56,7 +52,6 @@ namespace Web.Api.Controllers
             return this.HandleResult(result);
         }
 
-        // DELETE api/accounts/5
         [HttpDelete("{id}")]
         public async Task<IActionResult> Delete(Guid id)
         {

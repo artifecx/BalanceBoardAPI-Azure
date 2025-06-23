@@ -14,13 +14,13 @@ namespace Application.Features.Accounts
             var accountDto = request.Request;
 
             if (accountDto.UserId == Guid.Empty)
-                return Result<AccountDto>.Failure("Unauthorized access.");
+                return Result<AccountDto>.Failure("Unauthorized access.", 401);
 
             var userId = accountDto.UserId;
             var userExists = await context.Users
                 .AnyAsync(u => u.Id == userId, cancellationToken);
             if (!userExists)
-                return Result<AccountDto>.Failure("User does not exist.");
+                return Result<AccountDto>.Failure("User does not exist.", 404);
 
             var account = new Account
             {

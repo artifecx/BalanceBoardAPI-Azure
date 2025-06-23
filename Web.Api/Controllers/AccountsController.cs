@@ -1,6 +1,7 @@
 ﻿using Application.Common.Mediator;
 using Application.Dtos.Accounts;
 using Application.Features.Accounts;
+using FluentValidation;
 using Infrastructure.Authentication;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -11,13 +12,13 @@ namespace Web.Api.Controllers
     [Route("api/v1/[controller]")]
     [ApiController]
     [Authorize]
-    public class AccountsController(ISender Mediator) : ControllerBase
+    public class AccountsController(ISender mediator) : ControllerBase
     {
         // GET: api/accounts
         [HttpGet]
         public async Task<IActionResult> GetAll()
         {
-            var result = await Mediator.Send(new GetAccountsQuery(User.GetUserId()));
+            var result = await mediator.Send(new GetAccountsQuery(User.GetUserId()));
             return this.HandleResult(result);
         }
 
@@ -25,25 +26,33 @@ namespace Web.Api.Controllers
         [HttpGet("{id}")]
         public async Task<IActionResult> GetById(Guid id)
         {
-            var result = await Mediator.Send(new GetAccountByIdQuery(id, User.GetUserId()));
+            var result = await mediator.Send(new GetAccountByIdQuery(id, User.GetUserId()));
             return this.HandleResult(result);
         }
 
         // POST api/accounts
         [HttpPost]
-        public async Task<IActionResult> Create(UpsertAccountDto request)
+        public async Task<IActionResult> Create(UpsertAccountDto request, IValidator<UpsertAccountDto> validator)
         {
+            var validationResult = await this.ValidateRequest(request, validator);
+            if (validationResult != null)
+                return validationResult;
+
             SetUserIdInRequest(request);
-            var result = await Mediator.Send(new CreateAccountCommand(request));
+            var result = await mediator.Send(new CreateAccountCommand(request));
             return this.HandleResult(result);
         }
 
         // PUT api/accounts/5
         [HttpPut("{id}")]
-        public async Task<IActionResult> Update(Guid id, UpsertAccountDto request)
+        public async Task<IActionResult> Update(Guid id, UpsertAccountDto request, IValidator<UpsertAccountDto> validator)
         {
+            var validationResult = await this.ValidateRequest(request, validator);
+            if (validationResult != null)
+                return validationResult;
+
             SetUserIdInRequest(request);
-            var result = await Mediator.Send(new UpdateAccountCommand(id, request));
+            var result = await mediator.Send(new UpdateAccountCommand(id, request));
             return this.HandleResult(result);
         }
 
@@ -51,7 +60,7 @@ namespace Web.Api.Controllers
         [HttpDelete("{id}")]
         public async Task<IActionResult> Delete(Guid id)
         {
-            var result = await Mediator.Send(new DeleteAccountCommand(id, User.GetUserId()));
+            var result = await mediator.Send(new DeleteAccountCommand(id, User.GetUserId()));
             return this.HandleDeleteResult(result);
         }
 

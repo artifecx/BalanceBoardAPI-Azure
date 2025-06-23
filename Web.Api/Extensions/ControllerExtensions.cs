@@ -1,4 +1,5 @@
 ﻿using Application.Common;
+using FluentValidation;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Web.Api.Extensions
@@ -32,6 +33,28 @@ namespace Web.Api.Extensions
                 return controller.NoContent();
 
             return controller.BadRequest(result.Error);
+        }
+
+        public static async Task<IActionResult?> ValidateRequest<T>(
+            this ControllerBase controller,
+            T request,
+            IValidator<T> validator
+        )
+        {
+            var validationResult = await validator.ValidateAsync(request);
+            if (!validationResult.IsValid)
+            {
+                var problemDetails = new HttpValidationProblemDetails(validationResult.ToDictionary())
+                {
+                    Title = "Validation failed",
+                    Detail = "One or more validation errors occurred.",
+                    Instance = controller.HttpContext.Request.Path
+                };
+
+                return new BadRequestObjectResult(problemDetails);
+            }
+
+            return null;
         }
     }
 }

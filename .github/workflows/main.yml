@@ -27,10 +27,6 @@ jobs:
       - name: Build
         run: dotnet build ./BalanceBoard.sln --configuration Release --no-restore
 
-      - name: Appsettings
-        run: |
-            echo "${{ secrets.APPSETTINGS_PROD_B64 }}" | base64 -d > ./Web.Api/appsettings.json
-
       - name: Publish
         run: dotnet publish ./Web.Api/Web.Api.csproj --configuration Release --no-build --output '${{ env.AZURE_WEBAPP_PACKAGE_PATH }}'
 

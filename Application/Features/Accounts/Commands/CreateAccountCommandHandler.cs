@@ -12,19 +12,23 @@ namespace Application.Features.Accounts
         public async Task<Result<AccountDto>> Handle(CreateAccountCommand request, CancellationToken cancellationToken)
         {
             var accountDto = request.Request;
+            var userId = accountDto.UserId;
 
-            if (accountDto.UserId == Guid.Empty)
+            if (!userId.HasValue)
                 return Result<AccountDto>.Failure("Unauthorized access.", 401);
 
-            var userId = accountDto.UserId;
-            var userExists = await context.Users
-                .AnyAsync(u => u.Id == userId, cancellationToken);
-            if (!userExists)
+            var user = await context.Users
+                .Include(u => u.Accounts)
+                .FirstOrDefaultAsync(u => u.Id == userId, cancellationToken);
+            if (user is null)
                 return Result<AccountDto>.Failure("User does not exist.", 404);
+
+            if(user.Accounts is not null && user.Accounts.Any(a => a.Name.ToLower() == accountDto.Name.ToLower()))
+                return Result<AccountDto>.Failure("Account with same name exists.", 409);
 
             var account = new Account
             {
-                UserId = userId,
+                UserId = userId!.Value,
                 Name = accountDto.Name,
                 Balance = accountDto.Balance,
                 Currency = accountDto.Currency,

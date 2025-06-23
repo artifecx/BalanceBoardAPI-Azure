@@ -1,7 +1,6 @@
-﻿namespace Domain.Abstractions
+﻿namespace Domain.Abstractions;
+
+public class BaseEntity
 {
-    public class BaseEntity
-    {
-        public Guid Id { get; set; } = Guid.NewGuid();
-    }
+    public Guid Id { get; set; } = Guid.NewGuid();
 }

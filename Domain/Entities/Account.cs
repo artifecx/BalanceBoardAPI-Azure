@@ -10,6 +10,6 @@ public sealed class Account : BaseEntity
     public string Currency { get; set; } = "PHP"; // Default currency
     public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
 
-    public ICollection<Transaction>? Transactions { get; set; }
-    public User User { get; set; } = null!;
+    public ICollection<Transaction>? Transactions { get; private set; }
+    public User User { get; private set; } = null!;
 }

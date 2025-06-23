@@ -12,9 +12,9 @@ namespace Domain.Entities
         public DateTime TransactionDate { get; set; } = DateTime.UtcNow;
         public TransactionType Type { get; set; } = TransactionType.Expense;
 
-        public Account Account { get; set; } = null!;
-        public Category? Category { get; set; } = null!;
-        public User User { get; set; } = null!;
+        public Account Account { get; private set; } = null!;
+        public Category? Category { get; private set; }
+        public User User { get; private set; } = null!;
     }
 
     public enum TransactionType

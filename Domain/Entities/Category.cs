@@ -9,6 +9,6 @@ public sealed class Category : BaseEntity
     public TransactionType Type { get; set; } = TransactionType.Expense;
     public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
 
-    public ICollection<Transaction>? Transactions { get; set; }
-    public User User { get; set; } = null!;
+    public ICollection<Transaction>? Transactions { get; private set; }
+    public User User { get; private set; } = null!;
 }

@@ -11,7 +11,9 @@ namespace Web.Api.Validators.Transactions
                 .NotNull()
                     .WithMessage("Amount is required.")
                 .PrecisionScale(18, 2, true)
-                    .WithMessage("Amount must have a maximum of 18 digits and 2 decimal places.");
+                    .WithMessage("Amount must have a maximum of 18 digits and 2 decimal places.")
+                .GreaterThan(0)
+                    .WithMessage("Amount must be greater than zero.");
         }
     }
 }

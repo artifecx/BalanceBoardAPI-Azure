@@ -18,10 +18,6 @@ namespace Application.Validators.Accounts
                     .WithMessage("Balance is required.")
                 .PrecisionScale(18, 2, true)
                     .WithMessage("Balance must have a maximum of 18 digits and 2 decimal places.");
-
-            RuleFor(x => x.Currency)
-                .NotEmpty()
-                    .WithMessage("Currency is required.");
         }
     }
 }

@@ -1,54 +1,67 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Application.Common.Mediator;
+using Application.Dtos.Transactions;
+using Application.Features.Transactions;
+using FluentValidation;
+using Infrastructure.Authentication;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
+using Web.Api.Extensions;
 
 namespace Web.Api.Controllers
 {
     [Route("api/v1/[controller]")]
     [ApiController]
-    public class TransactionsController : ControllerBase
+    [Authorize]
+    public class TransactionsController(ISender mediator) : ControllerBase
     {
-        // GET: api/transactions
         [HttpGet]
         public async Task<IActionResult> GetAll()
         {
-            return Ok();
+            var result = await mediator.Send(new GetTransactionsQuery(User.GetUserId()));
+            return this.HandleResult(result);
         }
 
-        // GET api/transactions/5
         [HttpGet("{id}")]
         public async Task<IActionResult> GetById(Guid id)
         {
-            return Ok();
+            var result = await mediator.Send(new GetTransactionByIdQuery(id, User.GetUserId()));
+            return this.HandleResult(result);
         }
 
-        // POST api/transactions
         [HttpPost]
-        public async Task<IActionResult> Create([FromBody] string value)
+        public async Task<IActionResult> Create(UpsertTransactionDto request, IValidator<UpsertTransactionDto> validator)
         {
-            if (string.IsNullOrEmpty(value))
-            {
-                return BadRequest("Value cannot be null or empty.");
-            }
+            var validationResult = await this.ValidateRequest(request, validator);
+            if (validationResult != null)
+                return validationResult;
 
-            return CreatedAtAction(nameof(GetById), new { id = Guid.NewGuid() }, value);
+            SetUserIdInRequest(request);
+            var result = await mediator.Send(new CreateTransactionCommand(request));
+            return this.HandleResult(result);
         }
 
-        // PUT api/transactions/5
         [HttpPut("{id}")]
-        public async Task<IActionResult> Update(Guid id, [FromBody] string value)
+        public async Task<IActionResult> Update(Guid id, UpsertTransactionDto request, IValidator<UpsertTransactionDto> validator)
         {
-            if (string.IsNullOrEmpty(value))
-            {
-                return BadRequest("Value cannot be null or empty.");
-            }
+            var validationResult = await this.ValidateRequest(request, validator);
+            if (validationResult != null)
+                return validationResult;
 
-            return Ok();
+            SetUserIdInRequest(request);
+            var result = await mediator.Send(new UpdateTransactionCommand(id, request));
+            return this.HandleResult(result);
         }
 
-        // DELETE api/transactions/5
         [HttpDelete("{id}")]
         public async Task<IActionResult> Delete(Guid id)
         {
-            return NoContent();
+            var result = await mediator.Send(new DeleteTransactionCommand(id, User.GetUserId()));
+            return this.HandleDeleteResult(result);
+        }
+
+        private void SetUserIdInRequest(UpsertTransactionDto request)
+        {
+            request.UserId = User.GetUserId();
         }
     }
 }

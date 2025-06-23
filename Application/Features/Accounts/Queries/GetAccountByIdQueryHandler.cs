@@ -11,21 +11,21 @@ namespace Application.Features.Accounts
     {
         public async Task<Result<AccountDto>> Handle(GetAccountByIdQuery request, CancellationToken cancellationToken)
         {
-            if (request.Id == Guid.Empty)
-                return Result<AccountDto>.Failure("Unable to process request, Account ID is not provided.", 400);
+            var accountId = request.Id;
+            var userId = request.UserId;
 
-            var accountEntity = await context.Accounts
+            if (accountId == Guid.Empty || userId == Guid.Empty)
+                return Result<AccountDto>.Failure("Unable to process request, missing IDs.", 400);
+
+            var account = await context.Accounts
                 .Include(a => a.Transactions)
                 .AsNoTracking()
-                .FirstOrDefaultAsync(a => a.Id == request.Id, cancellationToken);
+                .FirstOrDefaultAsync(a => a.Id == accountId && a.UserId == userId, cancellationToken);
 
-            if (accountEntity is null)
+            if (account is null)
                 return Result<AccountDto>.Failure("Account not found.", 404);
 
-            if (accountEntity.UserId != request.UserId)
-                return Result<AccountDto>.Failure("Unauthorized access to account.", 401);
-
-            var transactionDtos = accountEntity.Transactions?.Select(t => new TransactionDto
+            var transactionDtos = account.Transactions?.Select(t => new TransactionDto
             (
                 Id: t.Id,
                 AccountId: t.AccountId,
@@ -38,11 +38,11 @@ namespace Application.Features.Accounts
 
             var accountDto = new AccountDto
             (
-                Id: accountEntity.Id,
-                Name: accountEntity.Name,
-                Balance: accountEntity.Balance,
-                Currency: accountEntity.Currency,
-                CreatedAt: accountEntity.CreatedAt,
+                Id: account.Id,
+                Name: account.Name,
+                Balance: account.Balance,
+                Currency: account.Currency,
+                CreatedAt: account.CreatedAt,
                 Transactions: transactionDtos
             );
 

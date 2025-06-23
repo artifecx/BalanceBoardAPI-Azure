@@ -11,11 +11,13 @@ namespace Application.Features.Accounts
     {
         public async Task<Result<List<AccountDto>>> Handle(GetAccountsQuery request, CancellationToken cancellationToken)
         {
-            if(request.UserId == Guid.Empty)
+            var userId = request.UserId;
+
+            if(userId == Guid.Empty)
                 return Result<List<AccountDto>>.Failure("Unable to process request, User ID is not provided.", 400);
 
             var accounts = await context.Accounts
-                .Where(a => a.UserId == request.UserId)
+                .Where(a => a.UserId == userId)
                 .Include(a => a.Transactions)
                 .Select(a => new AccountDto
                 (

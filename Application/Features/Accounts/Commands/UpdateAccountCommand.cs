@@ -4,5 +4,5 @@ using Application.Dtos.Accounts;
 
 namespace Application.Features.Accounts
 {
-    public sealed record UpdateAccountCommand(Guid Id, UpsertAccountDto Request) : IRequest<Result<AccountDto>>;
+    public sealed record UpdateAccountCommand(Guid Id, Guid UserId, UpsertAccountDto Request) : IRequest<Result<AccountDto>>;
 }

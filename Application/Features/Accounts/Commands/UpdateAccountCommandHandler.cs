@@ -22,8 +22,8 @@ namespace Application.Features.Accounts
                 return Result<AccountDto>.Failure("Account not found.", 404);
 
             var accountDto = request.Request;
-            if (accountDto.UserId != account.UserId)
-                return Result<AccountDto>.Failure("User ID mismatch. Unauthorized access.", 401);
+            if (request.UserId != account.UserId)
+                return Result<AccountDto>.Failure("Unauthorized access.", 401);
 
             if (string.IsNullOrWhiteSpace(accountDto.Name) 
                 || string.IsNullOrWhiteSpace(accountDto.Currency))

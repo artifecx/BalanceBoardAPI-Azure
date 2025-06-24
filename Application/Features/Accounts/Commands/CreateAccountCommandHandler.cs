@@ -12,9 +12,9 @@ namespace Application.Features.Accounts
         public async Task<Result<AccountDto>> Handle(CreateAccountCommand request, CancellationToken cancellationToken)
         {
             var accountDto = request.Request;
-            var userId = accountDto.UserId;
+            var userId = request.UserId;
 
-            if (!userId.HasValue)
+            if (userId == Guid.Empty)
                 return Result<AccountDto>.Failure("Unauthorized access.", 401);
 
             var user = await context.Users
@@ -28,7 +28,7 @@ namespace Application.Features.Accounts
 
             var account = new Account
             {
-                UserId = userId!.Value,
+                UserId = userId,
                 Name = accountDto.Name,
                 Balance = accountDto.Balance,
                 Currency = accountDto.Currency,

@@ -35,8 +35,7 @@ namespace Web.Api.Controllers
             if (validationResult != null)
                 return validationResult;
 
-            SetUserIdInRequest(request);
-            var result = await mediator.Send(new CreateAccountCommand(request));
+            var result = await mediator.Send(new CreateAccountCommand(User.GetUserId(), request));
             return this.HandleResult(result);
         }
 
@@ -47,8 +46,7 @@ namespace Web.Api.Controllers
             if (validationResult != null)
                 return validationResult;
 
-            SetUserIdInRequest(request);
-            var result = await mediator.Send(new UpdateAccountCommand(id, request));
+            var result = await mediator.Send(new UpdateAccountCommand(id, User.GetUserId(), request));
             return this.HandleResult(result);
         }
 
@@ -57,11 +55,6 @@ namespace Web.Api.Controllers
         {
             var result = await mediator.Send(new DeleteAccountCommand(id, User.GetUserId()));
             return this.HandleDeleteResult(result);
-        }
-
-        private void SetUserIdInRequest(UpsertAccountDto request)
-        {
-            request.UserId = User.GetUserId();
         }
     }
 }
